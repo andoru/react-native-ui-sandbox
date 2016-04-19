@@ -1,0 +1,3 @@
+rootProject.name = 'UISandbox'
+
+include ':app'
