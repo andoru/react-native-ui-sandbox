@@ -1,14 +1,3 @@
-var MOCKED_MOVIES_DATA = [
-  {title: 'Title', year: '2015', posters: {thumbnail: 'http://i.imgur.com/UePbdph.jpg'}},
-];
-
-var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
-
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
 
 import React, {
   AppRegistry,
@@ -17,81 +6,59 @@ import React, {
   ListView,
   StyleSheet,
   Text,
-  View
+  View,
+  Navigator
 } from 'react-native';
 
-class UISandbox extends Component {
+var Splash = require('./Splash');
+var Listing = require('./Listing');
+var Item = require('./Item');
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      dataSource: new ListView.DataSource({
-        rowHasChanged: (row1, row2) => row1 !== row2,
-      }),
-      loaded: false,
-    };
-  }
-
-  componentDidMount() {
-    this.fetchData();
-  }
-
-  fetchData() {
-    fetch(REQUEST_URL)
-      .then((response) => response.json())
-      .then((responseData) => {
-        this.setState({
-          dataSource: this.state.dataSource.cloneWithRows(responseData.movies),
-          loaded: true,
-        });
-      })
-      .done();
-  }
+class App  extends Component {
 
   render() {
-    if (!this.state.dataSource) {
-      return this.renderLoadingView();
-    }
-
     return (
-      <ListView
-        dataSource={this.state.dataSource}
-        renderRow={this.renderMovie}
-        style={styles.listView}
-      />
+      <Navigator
+          initialRoute={{id: 'Splash', name: 'Index'}}
+          renderScene={this.renderScene.bind(this)}
+          configureScene={(route) => {
+            if (route.sceneConfig) {
+              return route.sceneConfig;
+            }
+            return Navigator.SceneConfigs.PushFromRight;
+          }} />
     );
   }
 
-  renderLoadingView() {
+  renderScene(route, navigator) {
+    var routeId = route.id;
+    if (routeId === 'Splash') {
+      return (
+        <Splash
+          navigator={navigator} />
+      );
+    }
+    if (routeId === 'Listing') {
+      return (
+        <Listing
+          navigator={navigator} />
+      );
+    }
+    if (routeId === 'Item') {
+      return (
+        <Item
+          navigator={navigator} />
+      );
+    }
+    return this.noRoute(navigator);
+  }
+
+  noRoute(navigator) {
     return (
       <View style={styles.container}>
         <Text>
-          Loading movies...
+          No Route
         </Text>
-      </View>
-    );
-  }
-
-  renderMovie(movie) {
-    return (
-      <View style={styles.container}>
-        <Image
-          source={{uri: movie.posters.thumbnail}}
-          style={styles.thumbnail}
-        />
-        <View style={styles.rightContainer}>
-          <Text style={styles.title} numberOfLines={1}>{movie.title}</Text>
-          <Text style={styles.type} numberOfLines={1}>{movie.mpaa_rating}</Text>
-          <Text style={styles.year}>{movie.year}</Text>
-          <View style={styles.ratings}>
-            <View style={styles.critic}>
-              <Text>{movie.ratings.critics_rating}</Text>
-            </View>
-            <View style={styles.audience}>
-              <Text>{movie.ratings.audience_rating}</Text>
-            </View>
-          </View>
-        </View>
       </View>
     );
   }
@@ -108,38 +75,6 @@ var styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#EEE'
   },
-  rightContainer: {
-    flex: 1,
-    paddingLeft: 20,
-    paddingRight: 20
-  },
-  listView: {
-    paddingTop: 20,
-    backgroundColor: '#F5FCFF',
-  },
-  title: {
-    fontSize: 21,
-    marginBottom: 8,
-    textAlign: 'left',
-  },
-  year: {
-    textAlign: 'left',
-  },
-  thumbnail: {
-    width: 80,
-    height: 120,
-  },
-  ratings: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  critic: {
-    backgroundColor: 'red',
-  },
-
-  audience: {
-    backgroundColor: 'green',
-  },
 });
 
-AppRegistry.registerComponent('UISandbox', () => UISandbox);
+AppRegistry.registerComponent('UISandbox', () => App);
