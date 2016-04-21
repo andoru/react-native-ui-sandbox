@@ -10,6 +10,13 @@ import React, {
 
 class Item extends Component {
 
+  constructor(props) {
+      super(props);
+      this.state = {
+          hat: this.props.hat
+      };
+  }
+
   render() {
     return (
       <Navigator
@@ -26,7 +33,7 @@ class Item extends Component {
     return (
       <View style={styles.container}>
         <Text>
-          List item.
+          List item. {this.state.hat}
         </Text>
       </View>
     );
@@ -60,6 +67,7 @@ var NavigationBarRouteMapper = {
 
 var styles = StyleSheet.create({
   container: {
+    marginTop: 64,
     flex: 1,
     flexDirection: 'row',
     paddingTop: 8,

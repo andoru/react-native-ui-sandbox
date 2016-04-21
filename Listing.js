@@ -105,6 +105,7 @@ class Listing extends Component {
     this.props.navigator.push({
       id: 'Item',
       name: 'ItemView',
+      hat: 'yes a hat'
     });
   }
 
@@ -146,7 +147,7 @@ var styles = StyleSheet.create({
     paddingRight: 20
   },
   listView: {
-    paddingTop: 20,
+    paddingTop: 64,
     backgroundColor: '#F5FCFF',
   },
   title: {
@@ -158,8 +159,9 @@ var styles = StyleSheet.create({
     textAlign: 'left',
   },
   thumbnail: {
-    width: 80,
-    height: 120,
+    width: 60,
+    height: 90,
+    marginLeft: 8,
   },
   ratings: {
     flex: 1,
