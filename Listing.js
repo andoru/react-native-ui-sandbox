@@ -77,7 +77,7 @@ class Listing extends Component {
 
   renderMovie(movie) {
     return (
-      <TouchableHighlight onPress={ this.gotoItem.bind(this) }>
+      <TouchableHighlight onPress={ () => this.gotoItem(movie) }>
         <View style={styles.container}>
           <Image
             source={{uri: movie.posters.thumbnail}}
@@ -101,11 +101,12 @@ class Listing extends Component {
     );
   }
 
-  gotoItem() {
+  gotoItem(movie) {
     this.props.navigator.push({
       id: 'Item',
       name: 'ItemView',
-      hat: 'yes a hat'
+      title: movie.title,
+      item: movie,
     });
   }
 

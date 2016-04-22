@@ -2,6 +2,7 @@ import React, {
   Component,
   StyleSheet,
   Text,
+  Image,
   View,
   Navigator,
   TouchableHighlight,
@@ -11,20 +12,22 @@ import React, {
 class Item extends Component {
 
   constructor(props) {
-      super(props);
-      this.state = {
-          hat: this.props.hat
-      };
+    super(props);
+    this.state = {
+        movie: props.item
+    };
   }
 
   render() {
+    console.log(this.state.movie)
     return (
       <Navigator
           renderScene={this.renderScene.bind(this)}
           navigator={this.props.navigator}
           navigationBar={
-            <Navigator.NavigationBar style={{backgroundColor: '#246dd5'}}
-                routeMapper={NavigationBarRouteMapper} />
+            <Navigator.NavigationBar
+              style={{backgroundColor: '#246dd5'}}
+              routeMapper={NavigationBarRouteMapper(this.state.movie.title)} />
           } />
     );
   }
@@ -32,15 +35,20 @@ class Item extends Component {
   renderScene(route, navigator) {
     return (
       <View style={styles.container}>
+        <Image
+            source={{uri: this.state.movie.posters.profile}}
+            style={styles.thumbnail}
+          />
         <Text>
-          List item. {this.state.hat}
+          {this.state.movie.runtime} mins
         </Text>
       </View>
     );
   }
 }
 
-var NavigationBarRouteMapper = {
+var NavigationBarRouteMapper = title => ({
+
   LeftButton(route, navigator, index, navState) {
     return (
       <TouchableOpacity style={{flex: 1, justifyContent: 'center'}}
@@ -58,12 +66,12 @@ var NavigationBarRouteMapper = {
     return (
       <TouchableOpacity style={{flex: 1, justifyContent: 'center'}}>
         <Text style={{color: 'white', margin: 10, fontSize: 16}}>
-          A Movie
+          { title }
         </Text>
       </TouchableOpacity>
     );
   }
-};
+});
 
 var styles = StyleSheet.create({
   container: {
@@ -76,6 +84,10 @@ var styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#EEE'
   },
+  image: {
+    width: 60,
+    height: 90,
+  }
 });
 
 module.exports = Item;

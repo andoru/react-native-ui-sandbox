@@ -47,7 +47,7 @@ class App  extends Component {
     if (routeId === 'Item') {
       return (
         <Item
-          navigator={navigator} />
+          navigator={navigator} item={route.item||{}}/>
       );
     }
     return this.noRoute(navigator);
