@@ -11,7 +11,7 @@ class Splash extends Component {
     var navigator = this.props.navigator;
     setTimeout(() => {
       navigator.replace({
-        id: 'Listing',
+        id: 'Discover',
       });
     }, 1000);
   }

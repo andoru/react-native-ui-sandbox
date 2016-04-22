@@ -3,7 +3,6 @@ import React, {
   AppRegistry,
   Component,
   Image,
-  ListView,
   StyleSheet,
   Text,
   View,
@@ -11,6 +10,7 @@ import React, {
 } from 'react-native';
 
 var Splash = require('./Splash');
+var Discover = require('./Discover');
 var Listing = require('./Listing');
 var Item = require('./Item');
 
@@ -35,6 +35,12 @@ class App  extends Component {
     if (routeId === 'Splash') {
       return (
         <Splash
+          navigator={navigator} />
+      );
+    }
+    if (routeId === 'Discover') {
+      return (
+        <Discover
           navigator={navigator} />
       );
     }

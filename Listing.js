@@ -44,6 +44,7 @@ class Listing extends Component {
     return (
       <Navigator
           renderScene={this.renderScene.bind(this)}
+          navigator={this.props.navigator}
           navigationBar={
             <Navigator.NavigationBar style={{backgroundColor: '#246dd5', alignItems: 'center'}}
                 routeMapper={NavigationBarRouteMapper} />
@@ -115,7 +116,14 @@ class Listing extends Component {
 
 var NavigationBarRouteMapper = {
   LeftButton(route, navigator, index, navState) {
-    return null;
+    return (
+      <TouchableOpacity style={{flex: 1, justifyContent: 'center'}}
+          onPress={() => navigator.parentNavigator.pop()}>
+        <Text style={{color: 'white', margin: 10,}}>
+          Back
+        </Text>
+      </TouchableOpacity>
+    );
   },
   RightButton(route, navigator, index, navState) {
     return null;

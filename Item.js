@@ -19,7 +19,6 @@ class Item extends Component {
   }
 
   render() {
-    console.log(this.state.movie)
     return (
       <Navigator
           renderScene={this.renderScene.bind(this)}
