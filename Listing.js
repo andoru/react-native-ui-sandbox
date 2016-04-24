@@ -12,32 +12,21 @@ import React, {
   TouchableOpacity,
 } from 'react-native';
 
+var ParallaxView = require('react-native-parallax-view');
+
 class Listing extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      dataSource: new ListView.DataSource({
-        rowHasChanged: (row1, row2) => row1 !== row2,
-      }),
-      loaded: false,
+        store: props.store,
+        dataSource: new ListView.DataSource({
+          rowHasChanged: (row1, row2) => row1 !== row2,
+        }),
     };
-  }
 
-  componentDidMount() {
-    this.fetchData();
-  }
+    this.state.dataSource = this.state.dataSource.cloneWithRows(this.state.store.menu);
 
-  fetchData() {
-    fetch(REQUEST_URL)
-      .then((response) => response.json())
-      .then((responseData) => {
-        this.setState({
-          dataSource: this.state.dataSource.cloneWithRows(responseData.movies),
-          loaded: true,
-        });
-      })
-      .done();
   }
 
   render() {
@@ -47,7 +36,7 @@ class Listing extends Component {
           navigator={this.props.navigator}
           navigationBar={
             <Navigator.NavigationBar style={{backgroundColor: '#246dd5', alignItems: 'center'}}
-                routeMapper={NavigationBarRouteMapper} />
+                routeMapper={NavigationBarRouteMapper(this.state.store.title)} />
           } />
     );
   }
@@ -57,12 +46,27 @@ class Listing extends Component {
       return this.renderLoadingView();
     }
 
+    console.log(this.state.store)
+
     return (
-      <ListView
-        dataSource={this.state.dataSource}
-        renderRow={this.renderMovie.bind(this)}
-        style={styles.listView}
-      />
+      <View style={styles.container}>
+        <ParallaxView
+          backgroundSource={{ uri: this.state.store.image }}
+          windowHeight={300}
+          header={(
+            <Text style={styles.header}>
+                Header Content
+            </Text>
+          )}
+          scrollableViewStyle={{ backgroundColor: 'red' }}
+        >
+          <ListView
+            dataSource={this.state.dataSource}
+            renderRow={this.renderItem.bind(this)}
+            style={styles.listView}
+          />
+        </ParallaxView>
+      </View>
     );
   }
 
@@ -70,51 +74,35 @@ class Listing extends Component {
     return (
       <View style={styles.container}>
         <Text>
-          Loading movies...
+          Loading items...
         </Text>
       </View>
     );
   }
 
-  renderMovie(movie) {
+  renderItem(item) {
     return (
-      <TouchableHighlight onPress={ () => this.gotoItem(movie) }>
+      <TouchableHighlight onPress={ () => this.gotoItem(item) }>
         <View style={styles.container}>
-          <Image
-            source={{uri: movie.posters.thumbnail}}
-            style={styles.thumbnail}
-          />
-          <View style={styles.rightContainer}>
-            <Text style={styles.title} numberOfLines={1}>{movie.title}</Text>
-            <Text style={styles.type} numberOfLines={1}>{movie.mpaa_rating}</Text>
-            <Text style={styles.year}>{movie.year}</Text>
-            <View style={styles.ratings}>
-              <View style={styles.critic}>
-                <Text>{movie.ratings.critics_rating}</Text>
-              </View>
-              <View style={styles.audience}>
-                <Text>{movie.ratings.audience_rating}</Text>
-              </View>
-            </View>
-          </View>
+          <Text> { item.title }</Text>
         </View>
       </TouchableHighlight>
     );
   }
 
-  gotoItem(movie) {
-    this.props.navigator.push({
-      id: 'Item',
-      name: 'ItemView',
-      title: movie.title,
-      item: movie,
-    });
+  gotoItem(item) {
+    // this.props.navigator.push({
+    //   id: 'Item',
+    //   name: 'ItemView',
+    //   title: item.title,
+    //   item: item,
+    // });
   }
 
 }
 
 
-var NavigationBarRouteMapper = {
+var NavigationBarRouteMapper = title => ({
   LeftButton(route, navigator, index, navState) {
     return (
       <TouchableOpacity style={{flex: 1, justifyContent: 'center'}}
@@ -132,56 +120,27 @@ var NavigationBarRouteMapper = {
     return (
       <TouchableOpacity style={{flex: 1, justifyContent: 'center'}}>
         <Text style={{color: 'white', margin: 10, fontSize: 16}}>
-          Movies
+          { title }
         </Text>
       </TouchableOpacity>
     );
   }
-};
+});
 
 
 var styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    paddingTop: 8,
-    paddingBottom: 8,
     backgroundColor: '#F5FCFF',
-    borderBottomWidth: 1,
-    borderColor: '#EEE'
-  },
-  rightContainer: {
-    flex: 1,
-    paddingLeft: 20,
-    paddingRight: 20
   },
   listView: {
-    paddingTop: 64,
     backgroundColor: '#F5FCFF',
   },
   title: {
     fontSize: 21,
     marginBottom: 8,
     textAlign: 'left',
-  },
-  year: {
-    textAlign: 'left',
-  },
-  thumbnail: {
-    width: 60,
-    height: 90,
-    marginLeft: 8,
-  },
-  ratings: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  critic: {
-    backgroundColor: 'red',
-  },
-
-  audience: {
-    backgroundColor: 'green',
   },
 });
 

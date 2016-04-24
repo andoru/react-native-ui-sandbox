@@ -7,7 +7,8 @@ import React, {
   Navigator,
   TouchableHighlight,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  LayoutAnimation,
 } from 'react-native';
 
 var MapView = require('react-native-maps');
@@ -15,8 +16,8 @@ var MapView = require('react-native-maps');
 var { width, height } = Dimensions.get('window');
 
 const ASPECT_RATIO = width / height;
-const LATITUDE = 51.447713;
-const LONGITUDE = -2.609553;
+const LATITUDE = 51.449;
+const LONGITUDE = -2.6;
 const LATITUDE_DELTA = 0.02;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
@@ -31,43 +32,32 @@ class Discover extends Component {
         latitudeDelta: LATITUDE_DELTA,
         longitudeDelta: LONGITUDE_DELTA,
       },
-      markers: [
-        {
-          key: 1,
-          latlng: {
-            latitude: 51.447607,
-            longitude: -2.609724,
-          },
-          title: 'Simpleweb Kitchen',
-          description: 'The kitchen has hot water.'
-        }
-      ]
+      markers: stores,
+      selected: {}
     };
+
+    this.onRegionChange = this.onRegionChange.bind(this);
   }
 
   onRegionChange(region) {
-    this.state = {
+    this.setState({
       region: region
-    }
+    });
   }
 
   centerOnMarker(marker) {
-    console.log(this.refs);
-    this.refs.map.animateToRegion({
+    this.refs.discovery.refs.map.animateToRegion({
       latitude: marker.latlng.latitude,
       longitude: marker.latlng.longitude,
       latitudeDelta: this.state.region.latitudeDelta,
       longitudeDelta: this.state.region.longitudeDelta,
     });
-    // this.state.region.latitude = marker.latlng.latitude;
-    // this.state.region.longitude = marker.latlng.longitude;
-    console.log('center!!!');
-    console.log(this.state.region);
   }
 
   render() {
     return (
       <Navigator
+          ref="discovery"
           renderScene={this.renderScene.bind(this)}
           navigationBar={
             <Navigator.NavigationBar style={{backgroundColor: '#246dd5', alignItems: 'center'}}
@@ -77,9 +67,7 @@ class Discover extends Component {
   }
 
   renderScene(route, navigator) {
-
     return this.renderMap();
-
   }
 
   renderLoadingView() {
@@ -95,33 +83,61 @@ class Discover extends Component {
   renderMap() {
     console.log(this.state);
     return (
-      <MapView
-        ref="map"
-        style={styles.map}
-        region={this.state.region}
-        onRegionChange={this.onRegionChange}
-      >
-        {this.state.markers.map(marker => (
-          <MapView.Marker
-            key={marker.key}
-            coordinate={marker.latlng}
-            title={marker.title}
-            onSelect={ () => this.markerSelected(marker) }
-          />
-        ))}
-      </MapView>
+      <View style={styles.container}>
+        <MapView
+          ref='map'
+          style={styles.map}
+          region={this.state.region}
+          onRegionChange={ this.onRegionChange }
+        >
+          {this.state.markers.map(marker => (
+            <MapView.Marker
+              key={marker.key}
+              coordinate={marker.latlng}
+              onSelect={ () => this.markerSelected(marker) }
+              image={this.getIconForType(marker.type)}
+            />
+          ))}
+        </MapView>
+        <View style={[styles.card, this.state.selected.title && styles.card_active]}>
+          <Text style={styles.title}>{this.state.selected.title}</Text>
+          <Text style={styles.description}>{this.state.selected.description}</Text>
+          <TouchableOpacity style={styles.button} onPress={ () => this.goToSelected() }>
+            <Text style={styles.button_text}>
+              View Menu
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     );
   }
 
   markerSelected(marker) {
     console.log(marker);
     this.centerOnMarker(marker);
-      // setTimeout( () =>
-      //   this.props.navigator.push({
-      //     id: 'Listing',
-      //     name: 'ListView',
-      //   })
-      // ,1000);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+    this.setState({
+      selected: marker
+    });
+  }
+
+  getIconForType(type) {
+    switch(type) {
+      case 'coffee':
+        return require('./assets/icons/icon-coffee.png');
+      case 'beer':
+        return require('./assets/icons/icon-beer.png');
+      default:
+        return require('./assets/icons/icon-meal.png');
+    }
+  }
+
+  goToSelected() {
+    this.props.navigator.push({
+      id: 'Listing',
+      name: 'ListView',
+      store: this.state.selected,
+    })
   }
 
 }
@@ -145,16 +161,6 @@ var NavigationBarRouteMapper = {
   }
 };
 
-var marker =
-  {
-    latlng: {
-      lat: 51.447607,
-      lng: -2.609724,
-    },
-    title: 'Simpleweb Kitchen',
-    description: 'The kitchen has hot water.'
-  };
-
 var styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -173,6 +179,88 @@ var styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
+  card: {
+    position: 'absolute',
+    bottom: -156,
+    left: 0,
+    right: 0,
+    height: 156,
+    backgroundColor: '#F6F6F6',
+    shadowColor: '#000000',
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    shadowOffset: {
+      height: 1,
+      width: 0,
+    }
+  },
+  card_active: {
+    bottom: -28,
+  },
+  title: {
+    paddingTop: 12,
+    paddingLeft: 12,
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  description: {
+    paddingTop: 2,
+    paddingLeft: 12,
+    fontSize: 14,
+    fontWeight: '300',
+  },
+  button: {
+    position: 'absolute',
+    bottom: 28,
+    left: 0,
+    right: 0,
+    height: 64,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#4A90E2',
+  },
+  button_text: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  }
 });
+
+var stores = [
+  {
+    title: 'Simpleweb Kitchen',
+    description: 'The kitchen has hot water.',
+    type: 'coffee',
+    image: 'http://media.themalaymailonline.com/images/sized/ez/oldtown-ipoh2-crave-april27_840_560_100.jpg',
+    key: 1,
+    latlng: {
+      latitude: 51.447607,
+      longitude: -2.606,
+    },
+    menu: [
+      { title: 'Coffee' },
+      { title: 'Tea' },
+      { title: 'Water' },
+    ]
+  },
+  {
+    title: 'M Shed',
+    description: 'M Shed is a museum all about Bristol.',
+    type: 'beer',
+    image: 'https://s-media-cache-ak0.pinimg.com/736x/b8/f8/6b/b8f86b835a630bdfc2a61d6fcfcfb078.jpg',
+    key: 2,
+    latlng: {
+      latitude: 51.447618,
+      longitude: -2.598244,
+    },
+    menu: [
+      { title: 'Beer' },
+      { title: 'Beer' },
+      { title: 'More Beer' },
+    ]
+  },
+];
 
 module.exports = Discover;

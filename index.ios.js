@@ -47,13 +47,13 @@ class App  extends Component {
     if (routeId === 'Listing') {
       return (
         <Listing
-          navigator={navigator} />
+          navigator={navigator} store={route.store||{}} />
       );
     }
     if (routeId === 'Item') {
       return (
         <Item
-          navigator={navigator} item={route.item||{}}/>
+          navigator={navigator} item={route.item||{}} />
       );
     }
     return this.noRoute(navigator);
