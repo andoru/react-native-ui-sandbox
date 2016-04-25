@@ -7,6 +7,9 @@ import React, {
   StyleSheet,
   Text,
   View,
+  Button,
+  Modal,
+  ScrollView,
   Navigator,
   TouchableHighlight,
   TouchableOpacity,
@@ -23,10 +26,18 @@ class Listing extends Component {
         dataSource: new ListView.DataSource({
           rowHasChanged: (row1, row2) => row1 !== row2,
         }),
+        animated: true,
+        modalVisible: false,
+        transparent: true,
     };
 
     this.state.dataSource = this.state.dataSource.cloneWithRows(this.state.store.menu);
 
+  }
+
+  setModalVisible(visible) {
+    console.log('here i am');
+    this.setState({modalVisible: visible});
   }
 
   render() {
@@ -50,6 +61,30 @@ class Listing extends Component {
 
     return (
       <View style={styles.container}>
+
+        <Modal
+          animated={this.state.animated}
+          transparent={this.state.transparent}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {this.setModalVisible(false)}}
+          >
+          <View style={styles.modal}>
+            <View style={styles.modal_wrap}>
+              <View style={styles.modal_header}>
+                <Text>Modal Header</Text>
+              </View>
+              <ScrollView style={styles.modal_scroll}>
+                <View style={styles.modal_content}>
+                  <Text>This modal was presented {this.state.animated ? 'with' : 'without'} animation.</Text>
+                </View>
+              </ScrollView>
+              <View style={styles.modal_footer}>
+                <Text>Modal Header</Text>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
         <ParallaxView
           backgroundSource={{ uri: this.state.store.image }}
           windowHeight={300}
@@ -82,7 +117,7 @@ class Listing extends Component {
 
   renderItem(item) {
     return (
-      <TouchableHighlight onPress={ () => this.gotoItem(item) }>
+      <TouchableHighlight onPress={ () => this.setModalVisible(true) }>
         <View style={styles.container}>
           <Text> { item.title }</Text>
         </View>
@@ -141,6 +176,45 @@ var styles = StyleSheet.create({
     fontSize: 21,
     marginBottom: 8,
     textAlign: 'left',
+  },
+  modal: {
+    paddingTop: 100,
+    paddingBottom: 100,
+    paddingLeft: 16,
+    paddingRight: 16,
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  modal_wrap: {
+    flex: 1,
+    flexDirection: 'row',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  modal_header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 64,
+    backgroundColor: 'green',
+  },
+  modal_footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 64,
+    backgroundColor: 'green',
+  },
+  modal_scroll: {
+    marginTop: 64,
+    marginBottom: 64,
+  },
+  modal_content: {
+    height: 700,
+    backgroundColor: 'red'
   },
 });
 
