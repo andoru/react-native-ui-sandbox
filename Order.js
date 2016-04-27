@@ -12,6 +12,22 @@ import React, {
   TouchableOpacity,
 } from 'react-native';
 
+var StripeNative = require('react-native-stripe');
+
+const STRIPE_KEY = "pk_test_4rGWcguGvrsYwtQAu8rWNvj4";
+const MERCHANT_ID = "test";
+
+const SOME_ITEMS = [
+  {
+    label: "Llama Kitty T-shirt",
+    amount: 19.99,
+  },
+  {
+    label: "Hello Kitty Humidifier",
+    amount: 25.00,
+  },
+];
+
 class Order extends Component {
 
   constructor(props) {
@@ -21,12 +37,27 @@ class Order extends Component {
         modalVisible: false,
         transparent: true,
         items: props.items,
-        total: '£XX.XX',
+        total: 0,
         dataSource: new ListView.DataSource({
           rowHasChanged: (row1, row2) => row1 !== row2,
         }),
     };
     this.state.dataSource = this.state.dataSource.cloneWithRows(this.state.items);
+  }
+
+  componentDidMount() {
+    StripeNative.init(STRIPE_KEY, MERCHANT_ID);
+    this.getTotal();
+  }
+
+  getTotal() {
+    total = 0;
+
+    for (item of this.state.items) {
+      total += item.amount
+    }
+
+    this.setState({ total: total });
   }
 
   setModalVisible(visible) {
@@ -82,7 +113,7 @@ class Order extends Component {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={ () => this.setPaymentMethod() }>
             <View style={styles.button}>
               <Text style={styles.button_text}>
                 Add Payment
@@ -98,7 +129,7 @@ class Order extends Component {
             />
             <View style={styles.item}>
               <Text style={styles.item_title}>Total</Text>
-              <Text style={styles.item_price}>{ this.state.total }</Text>
+              <Text style={styles.item_price}>£{ this.state.total.toFixed(2) }</Text>
             </View>
           </View>
 
@@ -110,10 +141,39 @@ class Order extends Component {
   renderItem(item) {
     return (
       <View style={styles.item}>
-        <Text style={styles.item_title}>{ item.title }</Text>
-        <Text style={styles.item_price}>{ item.price }</Text>
+        <Text style={styles.item_title}>{ item.label }</Text>
+        <Text style={styles.item_price}>£{ item.amount.toFixed(2) }</Text>
       </View>
     );
+  }
+
+  setPaymentMethod() {
+    console.log('set payment method');
+
+    Promise.all([StripeNative.canMakePayments(), StripeNative.canMakePaymentsUsingNetworks()]).then(
+      (canMakePayments) => {
+        if (!canMakePayments[0])
+          alert("Apple Pay is not enabled on this device");
+        else if (!canMakePayments[1])
+          alert("Apple Pay is enabled but no card is configured");
+        else {
+          var options = {
+            fallbackOnCardForm: false,
+            shippingAddressFields: StripeNative.iOSConstants.PKAddressFieldAll,
+          };
+          StripeNative.paymentRequestWithApplePay(this.state.items, "Ordoo", options).then( (obj) => {
+            var token = obj[0],
+              shippingInfo = obj[1],
+              billingInfo = obj[2];
+
+            // (Create charge here)
+
+            (chargeWasSuccessful ? StripeNative.success : StripeNative.failure)();
+          }, (err) => {
+            // alert(err);
+          })
+        }
+      });
   }
 }
 
@@ -159,7 +219,6 @@ var styles = StyleSheet.create({
   item: {
     padding: 16,
     flex: 1,
-    alignItems: 'center',
     borderBottomWidth: 1,
     borderColor: '#f0f0f0',
   },

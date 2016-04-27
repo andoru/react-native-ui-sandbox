@@ -99,8 +99,8 @@ class Listing extends Component {
     return (
       <TouchableHighlight onPress={ () => this.addToOrder(item) }>
         <View style={styles.item}>
-          <Text style={styles.item_title}> { item.title }</Text>
-          <Text style={styles.item_price}> { item.price }</Text>
+          <Text style={styles.item_title}>{ item.label }</Text>
+          <Text style={styles.item_price}>£{ item.amount.toFixed(2) }</Text>
         </View>
       </TouchableHighlight>
     );
