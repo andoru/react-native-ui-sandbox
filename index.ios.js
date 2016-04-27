@@ -12,7 +12,7 @@ import React, {
 var Splash = require('./Splash');
 var Discover = require('./Discover');
 var Listing = require('./Listing');
-var Item = require('./Item');
+var Order = require('./Order');
 
 class App  extends Component {
 
@@ -50,10 +50,10 @@ class App  extends Component {
           navigator={navigator} store={route.store||{}} />
       );
     }
-    if (routeId === 'Item') {
+    if (routeId === 'Order') {
       return (
-        <Item
-          navigator={navigator} item={route.item||{}} />
+        <Order
+          navigator={navigator} items={route.items||{}} />
       );
     }
     return this.noRoute(navigator);

@@ -240,9 +240,9 @@ var stores = [
       longitude: -2.606,
     },
     menu: [
-      { title: 'Coffee' },
-      { title: 'Tea' },
-      { title: 'Water' },
+      { title: 'Coffee', price: '£3.00' },
+      { title: 'Tea', price: '£2.00' },
+      { title: 'Hot Chocolate', price: '£2.50' },
     ]
   },
   {
@@ -256,9 +256,9 @@ var stores = [
       longitude: -2.598244,
     },
     menu: [
-      { title: 'Beer' },
-      { title: 'Beer' },
-      { title: 'More Beer' },
+      { title: 'Beer', price: '£3.50' },
+      { title: 'Beer', price: '£4.00' },
+      { title: 'More Beer', price: '£4.50' },
     ]
   },
 ];

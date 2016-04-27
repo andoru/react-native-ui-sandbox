@@ -8,11 +8,10 @@ import React, {
   Text,
   View,
   Button,
-  Modal,
-  ScrollView,
   Navigator,
   TouchableHighlight,
   TouchableOpacity,
+  LayoutAnimation,
 } from 'react-native';
 
 var ParallaxView = require('react-native-parallax-view');
@@ -26,18 +25,11 @@ class Listing extends Component {
         dataSource: new ListView.DataSource({
           rowHasChanged: (row1, row2) => row1 !== row2,
         }),
-        animated: true,
-        modalVisible: false,
-        transparent: true,
+        basket: []
     };
 
     this.state.dataSource = this.state.dataSource.cloneWithRows(this.state.store.menu);
 
-  }
-
-  setModalVisible(visible) {
-    console.log('here i am');
-    this.setState({modalVisible: visible});
   }
 
   render() {
@@ -57,33 +49,8 @@ class Listing extends Component {
       return this.renderLoadingView();
     }
 
-    console.log(this.state.store)
-
     return (
       <View style={styles.container}>
-
-        <Modal
-          animated={this.state.animated}
-          transparent={this.state.transparent}
-          visible={this.state.modalVisible}
-          onRequestClose={() => {this.setModalVisible(false)}}
-          >
-          <View style={styles.modal}>
-            <View style={styles.modal_wrap}>
-              <View style={styles.modal_header}>
-                <Text>Modal Header</Text>
-              </View>
-              <ScrollView style={styles.modal_scroll}>
-                <View style={styles.modal_content}>
-                  <Text>This modal was presented {this.state.animated ? 'with' : 'without'} animation.</Text>
-                </View>
-              </ScrollView>
-              <View style={styles.modal_footer}>
-                <Text>Modal Header</Text>
-              </View>
-            </View>
-          </View>
-        </Modal>
 
         <ParallaxView
           backgroundSource={{ uri: this.state.store.image }}
@@ -101,6 +68,19 @@ class Listing extends Component {
             style={styles.listView}
           />
         </ParallaxView>
+
+        <View style={[styles.card, this.state.basket.length && styles.card_active]}>
+          <TouchableOpacity style={styles.button} onPress={ () => this.goToOrder() }>
+            <Text style={styles.button_text}>
+              View Order
+            </Text>
+            <View style={styles.button_count}>
+              <Text style={styles.button_count_text}>
+                { this.state.basket.length }
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -117,21 +97,30 @@ class Listing extends Component {
 
   renderItem(item) {
     return (
-      <TouchableHighlight onPress={ () => this.setModalVisible(true) }>
-        <View style={styles.container}>
-          <Text> { item.title }</Text>
+      <TouchableHighlight onPress={ () => this.addToOrder(item) }>
+        <View style={styles.item}>
+          <Text style={styles.item_title}> { item.title }</Text>
+          <Text style={styles.item_price}> { item.price }</Text>
         </View>
       </TouchableHighlight>
     );
   }
 
-  gotoItem(item) {
-    // this.props.navigator.push({
-    //   id: 'Item',
-    //   name: 'ItemView',
-    //   title: item.title,
-    //   item: item,
-    // });
+  addToOrder(item) {
+    order = this.state.basket;
+    order.push(item);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+    this.setState({
+      basket: order,
+    });
+  }
+
+  goToOrder() {
+    this.props.navigator.push({
+      id: 'Order',
+      name: 'OrderView',
+      items: this.state.basket,
+    });
   }
 
 }
@@ -177,44 +166,75 @@ var styles = StyleSheet.create({
     marginBottom: 8,
     textAlign: 'left',
   },
-  modal: {
-    paddingTop: 100,
-    paddingBottom: 100,
-    paddingLeft: 16,
-    paddingRight: 16,
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'rgba(0,0,0,0.3)',
-  },
-  modal_wrap: {
-    flex: 1,
-    flexDirection: 'row',
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  modal_header: {
+  card: {
     position: 'absolute',
-    top: 0,
+    bottom: -64,
     left: 0,
     right: 0,
     height: 64,
-    backgroundColor: 'green',
+    backgroundColor: '#4A90E2',
+    shadowColor: '#000000',
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    shadowOffset: {
+      height: 1,
+      width: 0,
+    }
   },
-  modal_footer: {
+  card_active: {
+    bottom: 0,
+  },
+  button: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     height: 64,
-    backgroundColor: 'green',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#4A90E2',
   },
-  modal_scroll: {
-    marginTop: 64,
-    marginBottom: 64,
+  button_text: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
-  modal_content: {
-    height: 700,
-    backgroundColor: 'red'
+  button_count: {
+    position: 'absolute',
+    top: 18,
+    bottom: 0,
+    right: 16,
+  },
+  button_count_text: {
+    padding: 4,
+    width: 32,
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '600',
+    color: 'white',
+    backgroundColor: '#326299',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  item: {
+    padding: 16,
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderColor: '#f0f0f0',
+  },
+  item_title: {
+    fontSize: 16,
+  },
+  item_price: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    fontSize: 16,
+    color: '#4A90E2',
   },
 });
 
