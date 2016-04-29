@@ -105,32 +105,44 @@ class Order extends Component {
             </View>
           </Modal>
 
-          <TouchableOpacity onPress={ () => this.setModalVisible(true) }>
-            <View style={styles.button}>
-              <Text style={styles.button_text}>
-                Set Pickup
-              </Text>
-            </View>
-          </TouchableOpacity>
+          <View style={styles.inner_container}>
 
-          <TouchableOpacity onPress={ () => this.setPaymentMethod() }>
-            <View style={styles.button}>
-              <Text style={styles.button_text}>
-                Add Payment
-              </Text>
-            </View>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={ () => this.setModalVisible(true) }>
+              <View style={styles.button}>
+                <Text style={styles.button_text}>
+                  Set Pickup
+                </Text>
+              </View>
+            </TouchableOpacity>
 
-          <View>
-            <ListView
-              dataSource={this.state.dataSource}
-              renderRow={this.renderItem.bind(this)}
-              style={styles.listView}
-            />
-            <View style={styles.item}>
-              <Text style={styles.item_title}>Total</Text>
-              <Text style={styles.item_price}>£{ this.state.total.toFixed(2) }</Text>
+            <TouchableOpacity onPress={ () => this.setPaymentMethod() }>
+              <View style={styles.button}>
+                <Text style={styles.button_text}>
+                  Add Payment
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <View>
+              <ListView
+                dataSource={this.state.dataSource}
+                renderRow={this.renderItem.bind(this)}
+                style={styles.listView}
+              />
+              <View style={styles.item}>
+                <Text style={styles.item_title}>Total</Text>
+                <Text style={styles.item_price}>£{ this.state.total.toFixed(2) }</Text>
+              </View>
             </View>
+
+          </View>
+
+          <View style={styles.footer_card}>
+            <TouchableOpacity style={styles.footer_button} onPress={ () => this.placeOrder() }>
+              <Text style={styles.footer_button_text}>
+                Place Order
+              </Text>
+            </TouchableOpacity>
           </View>
 
         </View>
@@ -175,6 +187,15 @@ class Order extends Component {
         }
       });
   }
+
+  placeOrder() {
+    alert('Place Order!!!');
+    // this.props.navigator.push({
+    //   id: 'Order',
+    //   name: 'OrderView',
+    //   items: this.state.basket,
+    // });
+  }
 }
 
 var NavigationBarRouteMapper = ({
@@ -207,11 +228,14 @@ var styles = StyleSheet.create({
   container: {
     marginTop: 64,
     flex: 1,
+    flexDirection: 'row',
     paddingTop: 8,
     paddingBottom: 8,
     backgroundColor: '#F5FCFF',
     borderBottomWidth: 1,
-    borderColor: '#EEE'
+  },
+  inner_container: {
+    flex: 1,
   },
   listView: {
     backgroundColor: '#F5FCFF',
@@ -242,6 +266,38 @@ var styles = StyleSheet.create({
   },
   button_text: {
     color: 'white'
+  },
+  footer_card: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 64,
+    backgroundColor: '#4A90E2',
+    shadowColor: '#000000',
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    shadowOffset: {
+      height: 1,
+      width: 0,
+    }
+  },
+  footer_button: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 64,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#4A90E2',
+  },
+  footer_button_text: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
   modal: {
     paddingTop: 100,
