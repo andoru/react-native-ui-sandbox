@@ -17,17 +17,6 @@ var StripeNative = require('react-native-stripe');
 const STRIPE_KEY = "pk_test_4rGWcguGvrsYwtQAu8rWNvj4";
 const MERCHANT_ID = "test";
 
-const SOME_ITEMS = [
-  {
-    label: "Llama Kitty T-shirt",
-    amount: 19.99,
-  },
-  {
-    label: "Hello Kitty Humidifier",
-    amount: 25.00,
-  },
-];
-
 class Order extends Component {
 
   constructor(props) {
@@ -35,9 +24,11 @@ class Order extends Component {
     this.state = {
         animated: true,
         modalVisible: false,
+        statusVisible: false,
         transparent: true,
         items: props.items,
         total: 0,
+        processing: false,
         dataSource: new ListView.DataSource({
           rowHasChanged: (row1, row2) => row1 !== row2,
         }),
@@ -62,6 +53,10 @@ class Order extends Component {
 
   setModalVisible(visible) {
     this.setState({modalVisible: visible});
+  }
+
+  setStatusVisible(visible) {
+    this.setState({statusVisible: visible});
   }
 
   render() {
@@ -102,6 +97,19 @@ class Order extends Component {
                   <Text>Modal Header</Text>
                 </View>
               </View>
+            </View>
+          </Modal>
+
+          <Modal
+            animated={this.state.animated}
+            transparent={this.state.transparent}
+            visible={this.state.statusVisible}
+            onRequestClose={() => {this.setStatusVisible(false)}}
+            >
+            <View style={styles.order_status}>
+              <TouchableOpacity onPress={ () => {this.setStatusVisible(false)} }>
+                <Text style={styles.order_status_text}>Order Placed!</Text>
+              </TouchableOpacity>
             </View>
           </Modal>
 
@@ -189,13 +197,25 @@ class Order extends Component {
   }
 
   placeOrder() {
-    alert('Place Order!!!');
-    // this.props.navigator.push({
-    //   id: 'Order',
-    //   name: 'OrderView',
-    //   items: this.state.basket,
-    // });
+    this.setStatusVisible(true)
+
+    setTimeout( () => {
+      this.goToDiscover()
+    }
+    , 1000);
+
+    setTimeout( () => {
+      this.setStatusVisible(false)
+    }
+    , 2000);
   }
+
+  goToDiscover() {
+    this.props.navigator.replace({
+      id: 'Discover',
+    });
+  }
+
 }
 
 var NavigationBarRouteMapper = ({
@@ -338,6 +358,17 @@ var styles = StyleSheet.create({
     height: 700,
     backgroundColor: 'red'
   },
+  order_status: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#4A90E2',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  order_status_text: {
+    fontSize: 21,
+    color: 'white',
+  }
 });
 
 module.exports = Order;
