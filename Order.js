@@ -28,6 +28,7 @@ class Order extends Component {
         transparent: true,
         items: props.items,
         total: 0,
+        pickup: false,
         processing: false,
         dataSource: new ListView.DataSource({
           rowHasChanged: (row1, row2) => row1 !== row2,
@@ -86,16 +87,27 @@ class Order extends Component {
             <View style={styles.modal}>
               <View style={styles.modal_wrap}>
                 <View style={styles.modal_header}>
-                  <Text>Modal Header</Text>
+                  <Text style={styles.modal_header_text}>Pick-up order in...</Text>
                 </View>
                 <ScrollView style={styles.modal_scroll}>
                   <View style={styles.modal_content}>
-                    <Text>This modal was presented {this.state.animated ? 'with' : 'without'} animation.</Text>
+                    <TouchableOpacity onPress={ () => {this.setPickup(5)} }>
+                      <View style={styles.item}>
+                        <Text style={styles.item_title}>5 minutes</Text>
+                      </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={ () => {this.setPickup(10)} }>
+                      <View style={styles.item}>
+                        <Text style={styles.item_title}>10 minutes</Text>
+                      </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={ () => {this.setPickup(15)} }>
+                      <View style={styles.item}>
+                        <Text style={styles.item_title}>15 minutes</Text>
+                      </View>
+                    </TouchableOpacity>
                   </View>
                 </ScrollView>
-                <View style={styles.modal_footer}>
-                  <Text>Modal Header</Text>
-                </View>
               </View>
             </View>
           </Modal>
@@ -118,7 +130,14 @@ class Order extends Component {
             <TouchableOpacity onPress={ () => this.setModalVisible(true) }>
               <View style={styles.button}>
                 <Text style={styles.button_text}>
-                  Set Pickup
+                  {(() => {
+                    if (this.state.pickup) {
+                      return "Pick-up in " + this.state.pickup + " minutes";
+                    }
+                    else {
+                      return "Set Pick-up Time";
+                    }
+                  })()}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -165,6 +184,11 @@ class Order extends Component {
         <Text style={styles.item_price}>£{ item.amount.toFixed(2) }</Text>
       </View>
     );
+  }
+
+  setPickup(time) {
+    this.setState({ pickup: time });
+    this.setModalVisible(false);
   }
 
   setPaymentMethod() {
@@ -322,8 +346,8 @@ var styles = StyleSheet.create({
   modal: {
     paddingTop: 100,
     paddingBottom: 100,
-    paddingLeft: 16,
-    paddingRight: 16,
+    paddingLeft: 8,
+    paddingRight: 8,
     flex: 1,
     flexDirection: 'row',
     backgroundColor: 'rgba(0,0,0,0.3)',
@@ -340,7 +364,16 @@ var styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 64,
-    backgroundColor: 'green',
+    backgroundColor: '#4A90E2',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modal_header_text: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: 'white'
   },
   modal_footer: {
     position: 'absolute',
@@ -352,11 +385,11 @@ var styles = StyleSheet.create({
   },
   modal_scroll: {
     marginTop: 64,
-    marginBottom: 64,
+    marginBottom: 0,
   },
   modal_content: {
-    height: 700,
-    backgroundColor: 'red'
+    height: 500,
+    backgroundColor: 'white'
   },
   order_status: {
     flex: 1,

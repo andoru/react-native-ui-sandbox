@@ -13,14 +13,14 @@ class Splash extends Component {
       navigator.replace({
         id: 'Discover',
       });
-    }, 1000);
+    }, 4000);
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <Text>
-          Splash page.
+        <Text style={styles.splash_text}>
+          Order things then collect them.
         </Text>
       </View>
     );
@@ -31,12 +31,14 @@ var styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    paddingTop: 8,
-    paddingBottom: 8,
-    backgroundColor: '#F5FCFF',
-    borderBottomWidth: 1,
-    borderColor: '#EEE'
+    backgroundColor: '#4A90E2',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
+  splash_text: {
+    fontSize: 21,
+    color: 'white',
+  }
 });
 
 module.exports = Splash;

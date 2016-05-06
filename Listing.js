@@ -225,6 +225,7 @@ var styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderColor: '#f0f0f0',
+    backgroundColor: '#ffffff',
   },
   item_title: {
     fontSize: 16,
